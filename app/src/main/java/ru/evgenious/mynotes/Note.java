@@ -1,7 +1,9 @@
 package ru.evgenious.mynotes;
 
 
-public class Note {
+import java.io.Serializable;
+
+public class Note implements Serializable {
     private final String title;         // заголовок
     private final String content;       // содержание заметки
     private final String date;          // дата (срок выполнения заметки, string), может не быть

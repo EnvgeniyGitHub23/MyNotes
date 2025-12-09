@@ -1,11 +1,15 @@
 package ru.evgenious.mynotes;
 
 
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +31,13 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        // Кнопка FAB для добавления новой заметки
+        findViewById(R.id.fabAdd).setOnClickListener(v -> {
+            Intent intent = new Intent(this, EditNoteActivity.class);
+            editNoteLauncher.launch(intent);
+        });
+
+
         initializeData();
 
         adapter = new NotesAdapter(notesList);
@@ -34,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
         // кастомный декоратор для разделителей
         recyclerView.addItemDecoration(new SimpleDividerDecoration());
+
+
     }
 
     // Добавляем тестовые карточки
@@ -113,4 +126,26 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    private final ActivityResultLauncher<Intent> editNoteLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                            Note note = (Note) result.getData()
+                                    .getSerializableExtra(EditNoteActivity.EXTRA_NOTE);
+
+                            int position = result.getData()
+                                    .getIntExtra(EditNoteActivity.EXTRA_POSITION, -1);
+
+                            if (position == -1) {
+                                notesList.add(note);
+                                adapter.notifyItemInserted(notesList.size() - 1);
+                            } else {
+                                notesList.set(position, note);
+                                adapter.notifyItemChanged(position);
+                            }
+                        }
+                    });
+
 }
