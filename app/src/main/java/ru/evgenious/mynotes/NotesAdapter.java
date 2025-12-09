@@ -4,14 +4,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHolder> {
 
     private final List<Note> notesList;
+
+    // ====== LISTENER ======
+    public interface OnNoteLongClickListener {
+        void onNoteLongClick(int position, View view);
+    }
+
+    private OnNoteLongClickListener longClickListener;
+
+    public void setOnNoteLongClickListener(OnNoteLongClickListener listener) {
+        this.longClickListener = listener;
+    }
+    // ======================
 
     // цвета для карточек
     private final int[] cardColors = {
@@ -42,8 +56,21 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
         holder.contentTextView.setText(note.getFormattedContent(true));
 
         // Декоратор для цвета карточки
-        holder.cardView.setCardBackgroundColor(cardColors[position % cardColors.length]);
+        holder.cardView.setCardBackgroundColor(
+                cardColors[position % cardColors.length]
+        );
 
+        // ===== LONG CLICK =====
+        holder.itemView.setOnLongClickListener(v -> {
+            if (longClickListener != null) {
+                int pos = holder.getBindingAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION) {
+                    longClickListener.onNoteLongClick(pos, v);
+                }
+            }
+            return true;
+        });
+        // ======================
     }
 
     @Override

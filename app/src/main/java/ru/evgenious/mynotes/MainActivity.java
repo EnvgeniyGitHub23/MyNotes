@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.widget.PopupMenu;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -45,6 +46,36 @@ public class MainActivity extends AppCompatActivity {
 
         // кастомный декоратор для разделителей
         recyclerView.addItemDecoration(new SimpleDividerDecoration());
+
+
+        adapter.setOnNoteLongClickListener((position, view) -> {
+
+            PopupMenu popup = new PopupMenu(this, view);
+            popup.getMenuInflater().inflate(R.menu.note_menu, popup.getMenu());
+
+            popup.setOnMenuItemClickListener(item -> {
+
+                if (item.getItemId() == R.id.action_edit) {
+
+                    Intent intent = new Intent(this, EditNoteActivity.class);
+                    intent.putExtra(EditNoteActivity.EXTRA_NOTE, notesList.get(position));
+                    intent.putExtra(EditNoteActivity.EXTRA_POSITION, position);
+
+                    editNoteLauncher.launch(intent);
+                    return true;
+
+                } else if (item.getItemId() == R.id.action_delete) {
+
+                    notesList.remove(position);
+                    adapter.notifyItemRemoved(position);
+                    return true;
+                }
+                return false;
+            });
+
+            popup.show();
+        });
+
 
 
     }
@@ -132,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
                     new ActivityResultContracts.StartActivityForResult(),
                     result -> {
                         if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+
                             Note note = (Note) result.getData()
                                     .getSerializableExtra(EditNoteActivity.EXTRA_NOTE);
 
@@ -147,5 +179,9 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                     });
+
+
+
+
 
 }
