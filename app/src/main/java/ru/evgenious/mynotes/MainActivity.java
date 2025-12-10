@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private NotesAdapter adapter;
     private List<Note> notesList;
+    private NotesStorage storage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +41,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        initializeData();
+
+        storage = new NotesStorage(this);
+        notesList = storage.loadNotes();
+
+        if (notesList.isEmpty()) {
+            initializeData();        // заполняем тестовые данные ТОЛЬКО прри первом щапуске
+            storage.saveNotes(notesList);
+        }
+
 
         adapter = new NotesAdapter(notesList);
         recyclerView.setAdapter(adapter);
@@ -68,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
                     notesList.remove(position);
                     adapter.notifyItemRemoved(position);
+                    storage.saveNotes(notesList);
                     return true;
                 }
                 return false;
@@ -177,6 +188,8 @@ public class MainActivity extends AppCompatActivity {
                                 notesList.set(position, note);
                                 adapter.notifyItemChanged(position);
                             }
+
+                            storage.saveNotes(notesList);
                         }
                     });
 

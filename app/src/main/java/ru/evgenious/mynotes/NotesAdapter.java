@@ -15,7 +15,6 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
 
     private final List<Note> notesList;
 
-    // ====== LISTENER ======
     public interface OnNoteLongClickListener {
         void onNoteLongClick(int position, View view);
     }
@@ -25,7 +24,6 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
     public void setOnNoteLongClickListener(OnNoteLongClickListener listener) {
         this.longClickListener = listener;
     }
-    // ======================
 
     // цвета для карточек
     private final int[] cardColors = {
@@ -60,7 +58,6 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
                 cardColors[position % cardColors.length]
         );
 
-        // ===== LONG CLICK =====
         holder.itemView.setOnLongClickListener(v -> {
             if (longClickListener != null) {
                 int pos = holder.getBindingAdapterPosition();
@@ -70,7 +67,6 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
             }
             return true;
         });
-        // ======================
     }
 
     @Override
